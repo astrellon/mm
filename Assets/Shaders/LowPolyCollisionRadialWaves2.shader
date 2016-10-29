@@ -15,7 +15,6 @@ Shader "Trolltunga/LowPolyCollisionRadialWaves 2.0"
 		_WaveSpeed("Wave speed", Float) = 1.0
 		_RandomHeight("Random height", Float) = 0.5
 		_RandomSpeed("Random Speed", Float) = 0.5
-		//_CollisionWaveLength("Collision wave length", Float) = 2.0
 
 		[HideInInspector] _AlphaFactor("Alpha factor", Range(0, 1.0)) = 1.0
 	}
@@ -62,8 +61,6 @@ Shader "Trolltunga/LowPolyCollisionRadialWaves 2.0"
 				float _WaveSpeed;
 				float _RandomHeight;
 				float _RandomSpeed;
-				//float _CollisionWaveLength;
-				//vector _CollisionVectors[20];
 				
 				uniform float _Shininess;
 				uniform float _AlphaFactor;
@@ -91,25 +88,10 @@ Shader "Trolltunga/LowPolyCollisionRadialWaves 2.0"
 
 					float3 v0 = mul((float3x3)unity_ObjectToWorld, v.vertex).xyz;
 
-					//float collPhase = 0.0;
-
-					//for (int i = 0; i < 20; i++)
-					//{
-					//	float distanceToCenter = length(v0.xz - _CollisionVectors[i].xy);
-					//	float waveHeight = _CollisionVectors[i].z;
-					//	float waveState = _CollisionVectors[i].w;
-
-					//	if (distanceToCenter < _CollisionWaveLength * 10 * waveState)
-					//	{
-					//		collPhase += (waveHeight * ((1.0 - waveState) * distanceToCenter) / (_CollisionWaveLength * 10 * waveState)) * sin(distanceToCenter - (_CollisionWaveLength * 10 * waveState));
-					//	}
-					//}
-
 					float phase0 = (_WaveHeight)* sin((_Time[1] * _WaveSpeed) + (v0.x * _WaveLength) + (v0.z * _WaveLength) + rand2(v0.xzz));
 					float phase0_1 = (_RandomHeight)* sin(cos(rand(v0.xzz) * _RandomHeight * cos(_Time[1] * _RandomSpeed * sin(rand(v0.xxz)))));
 					float phase0_2 = (_WaveHeight / 5.0) * sin((_Time[1] * _WaveSpeed * 3.0) + (v0.x * -_WaveLength * 4.0) + (v0.z * _WaveLength * 4.0) + rand2(v0.xzz));
 
-					//v0.y += collPhase + phase0 + phase0_1 + phase0_2;
 					v0.y += phase0 + phase0_1 + phase0_2;
 
 					v.vertex.xyz = mul((float3x3)unity_WorldToObject, v0);
@@ -305,8 +287,6 @@ Shader "Trolltunga/LowPolyCollisionRadialWaves 2.0"
 				float _WaveSpeed;
 				float _RandomHeight;
 				float _RandomSpeed;
-				float _CollisionWaveLength;
-				vector _CollisionVectors[20];
 
 				struct v2f
 				{
@@ -316,20 +296,6 @@ Shader "Trolltunga/LowPolyCollisionRadialWaves 2.0"
 				v2f vert(appdata_base v)
 				{
 					float3 v0 = mul((float3x3)unity_ObjectToWorld, v.vertex).xyz;
-
-					//float collPhase = 0.0;
-
-					//for (int i = 0; i < 20; i++)
-					//{
-					//	float distanceToCenter = length(v0.xz - _CollisionVectors[i].xy);
-					//	float waveHeight = _CollisionVectors[i].z;
-					//	float waveState = _CollisionVectors[i].w;
-
-					//	if (distanceToCenter < _CollisionWaveLength * 10 * waveState)
-					//	{
-					//		collPhase += (waveHeight * ((1.0 - waveState) * distanceToCenter) / (_CollisionWaveLength * 10 * waveState)) * sin(distanceToCenter - (_CollisionWaveLength * 10 * waveState));
-					//	}
-					//}
 
 					float phase0 = (_WaveHeight)* sin((_Time[1] * _WaveSpeed) + (v0.x * _WaveLength) + (v0.z * _WaveLength) + rand2(v0.xzz));
 					float phase0_1 = (_RandomHeight)* sin(cos(rand(v0.xzz) * _RandomHeight * cos(_Time[1] * _RandomSpeed * sin(rand(v0.xxz)))));
