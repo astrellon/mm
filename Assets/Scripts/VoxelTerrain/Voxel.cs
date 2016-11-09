@@ -3,6 +3,7 @@ using System.Collections;
 
 public struct Voxel
 {
+    #region Statics {{{
     public enum MeshShapeType : byte
     {
         None = 0x00,
@@ -22,58 +23,7 @@ public struct Voxel
         West = 0x03 << 0x03
     }
     public const byte UpsideDownFlag = 0x01 << 0x05;
-
-    public readonly byte ShapeData;
-    public readonly ushort BlockType;
-
     public static readonly Voxel Empty = new Voxel(MeshShapeType.None, 0);
-
-    public Voxel(MeshShapeType meshShape, RotationType rotation, bool upsideDown, ushort blockType)
-    {
-        ShapeData = CalcShape(meshShape, rotation, upsideDown);
-        BlockType = blockType;
-    }
-    public Voxel(MeshShapeType meshShape, ushort blockType)
-    {
-        ShapeData = CalcShape(meshShape, RotationType.North, false);
-        BlockType = blockType;
-    }
-    private Voxel(byte shapeData, ushort blockType)
-    {
-        ShapeData = shapeData;
-        BlockType = blockType;
-    }
-
-    public Voxel ChangeShape(MeshShapeType meshShape, RotationType rotation, bool upsideDown)
-    {
-        return new Voxel(meshShape, rotation, upsideDown, BlockType);
-    }
-    public Voxel ChangeBlockType(ushort blockType)
-    {
-        return new Voxel(ShapeData, blockType);
-    }
-
-    public MeshShapeType MeshShape
-    {
-        get
-        {
-            return (MeshShapeType)(ShapeData & 0x07);
-        }
-    }
-    public RotationType Rotation
-    {
-        get
-        {
-            return (RotationType)(ShapeData & 0x18);
-        }
-    }
-    public bool IsUpsideDown
-    {
-        get
-        {
-            return (ShapeData & UpsideDownFlag) > 0;
-        }
-    }
 
     public static byte CalcShape(MeshShapeType meshShape, RotationType rotation, bool upsideDown)
     {
@@ -84,10 +34,59 @@ public struct Voxel
         }
         return result;
     }
+    #endregion }}}
+
+    #region Fields {{{
+    public readonly byte ShapeData;
+    public readonly ushort BlockType;
+    #endregion }}}
+
+    #region Constructors {{{
+    public Voxel(MeshShapeType meshShape, RotationType rotation, bool upsideDown, ushort blockType)
+    {
+        ShapeData = CalcShape(meshShape, rotation, upsideDown);
+        BlockType = blockType;
+    }
+    public Voxel(MeshShapeType meshShape, ushort blockType)
+    {
+        ShapeData = CalcShape(meshShape, RotationType.North, false);
+        BlockType = blockType;
+    }
+    public Voxel(byte shapeData, ushort blockType)
+    {
+        ShapeData = shapeData;
+        BlockType = blockType;
+    }
+    #endregion }}}
+
+    #region Properties {{{
+    public MeshShapeType MeshShape
+    {
+        get { return (MeshShapeType)(ShapeData & 0x07); }
+    }
+    public RotationType Rotation
+    {
+        get { return (RotationType)(ShapeData & 0x18); }
+    }
+    public bool IsUpsideDown
+    {
+        get { return (ShapeData & UpsideDownFlag) > 0; }
+    }
+    #endregion }}}
+
+    #region Methods {{{
+    public Voxel ChangeShape(MeshShapeType meshShape, RotationType rotation, bool upsideDown)
+    {
+        return new Voxel(meshShape, rotation, upsideDown, BlockType);
+    }
+    public Voxel ChangeBlockType(ushort blockType)
+    {
+        return new Voxel(ShapeData, blockType);
+    }
 
     public override string ToString()
     {
         return string.Format("Voxel {0} {1} {2}", MeshShape, Rotation, IsUpsideDown ? "upside down" : "upwards");
     }
-
+    #endregion }}}
 }

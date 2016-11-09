@@ -7,17 +7,16 @@ public class Chunk : MonoBehaviour
     public readonly Voxel[] Voxels = new Voxel[TotalVoxels];
     public Vector3 ChunkPosition = Vector3.zero;
     public bool IsDirty = true;
+    public bool IsDataDirty = true;
+    public bool Loaded = false;
 
     public VoxelTerrain Parent;
 
-    public void Start()
-    {
-    }
-
     public void SetVoxel(uint x, uint y, uint z, Voxel voxel)
     {
-        Voxels[(z << 6) + (y << 3) + x] = voxel;
-        IsDirty = true;
+        this.Voxels[(z << 6) + (y << 3) + x] = voxel;
+        this.IsDirty = true;
+        this.IsDataDirty = true;
     }
     public bool GetVoxel(uint x, uint y, uint z, ref Voxel voxel)
     {
@@ -25,7 +24,7 @@ public class Chunk : MonoBehaviour
         {
             return false;
         }
-        voxel = Voxels[(z << 6) + (y << 3) + x];
+        voxel = this.Voxels[(z << 6) + (y << 3) + x];
         return true;
     }
 }

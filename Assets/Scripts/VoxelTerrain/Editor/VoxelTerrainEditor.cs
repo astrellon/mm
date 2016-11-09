@@ -281,6 +281,7 @@ public class VoxelTerrainEditor : Editor
                 if (paintMode == PaintModeType.Single)
                 {
                     PaintAtPoint(terrain, x, y, z);
+                    SaveAllDataDirty(terrain);
                 }
                 else if (paintMode == PaintModeType.Rectangle && e.type == EventType.MouseDown)
                 {
@@ -317,6 +318,8 @@ public class VoxelTerrainEditor : Editor
                         }
                     }
                 }
+
+                SaveAllDataDirty(terrain);
 
                 EditorUtility.SetDirty(terrain);
                 mouseDownTileCursorPosition = null;
@@ -401,5 +404,10 @@ public class VoxelTerrainEditor : Editor
         {
             terrain.SetVoxel(x, y, z, new Voxel(selectedMeshShape, selectedRotation, selectedUpsideDown, selectedBlockType));
         }
+    }
+
+    private void SaveAllDataDirty(VoxelTerrain terrain)
+    {
+        VoxelLoader.Save(terrain, "", true);
     }
 }

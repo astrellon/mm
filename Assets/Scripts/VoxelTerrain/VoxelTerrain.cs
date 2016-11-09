@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 
 [ExecuteInEditMode]
 public class VoxelTerrain : MonoBehaviour
@@ -76,7 +77,7 @@ public class VoxelTerrain : MonoBehaviour
         }
     }
 
-    Chunk GetChunk(int x, int y, int z)
+    public Chunk GetChunk(int x, int y, int z)
     {
         var worldX = Mathf.Floor(x / 8f);
         var worldY = Mathf.Floor(y / 8f);
@@ -96,6 +97,24 @@ public class VoxelTerrain : MonoBehaviour
             chunk.transform.position = pos;
 
             var chunkRender = chunkObj.AddComponent<ChunkRender>();
+        }
+
+        if (!chunk.Loaded)
+        {
+            chunk.ChunkPosition = pos;
+            chunk.Parent = this;
+            chunk.transform.position = pos;
+            chunk.Loaded = true;
+            var filename = string.Format("{0}.{1}.{2}.{3}.chunk", VoxelLoader.LevelPath("test"), pos.x, pos.y, pos.z);
+            if (File.Exists(filename))
+            {
+                Debug.Log("Chunk not loaded, pulling from: " + filename);
+                ChunkSerializer.Deserialize(chunk, filename);
+            }
+            else
+            {
+                Debug.Log("Skipping load chunk as file does not exist: " + filename);
+            }
         }
 
         return chunk;
