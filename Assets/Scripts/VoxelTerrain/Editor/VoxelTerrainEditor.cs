@@ -56,6 +56,7 @@ public class VoxelTerrainEditor : Editor
     private bool selectedUpsideDown = false;
     private bool paintShape = false;
     private bool paintBlockType = false;
+    private bool paintOnlyBlank = false;
 
     private PlaneAlignment alignment = PlaneAlignment.XZ;
 
@@ -105,6 +106,8 @@ public class VoxelTerrainEditor : Editor
 
         var terrain = (VoxelTerrain)target;
 
+        terrain.LevelName = EditorGUILayout.TextField("LevelName: ", terrain.LevelName);
+
         CreatePlanes(terrain);
 
         EditorGUILayout.LabelField("Plane alignment");
@@ -129,6 +132,8 @@ public class VoxelTerrainEditor : Editor
             }
         }
         GUILayout.EndHorizontal();
+
+        paintOnlyBlank = EditorGUILayout.Toggle("Only paint on blank?", paintOnlyBlank);
 
         EditorGUILayout.LabelField("Available block types");
         ushort blockTypeCount = 0;
@@ -384,6 +389,15 @@ public class VoxelTerrainEditor : Editor
 
     private void PaintAtPoint(VoxelTerrain terrain, int x, int y, int z)
     {
+        if (paintOnlyBlank)
+        {
+            var voxel = terrain.GetVoxel(x, y, z);
+            if (voxel.MeshShape != Voxel.MeshShapeType.None)
+            {
+                return;
+            }
+        }
+
         if (!paintBlockType && paintShape)
         {
             var currentVoxel = terrain.GetVoxel(x, y, z);
@@ -408,6 +422,6 @@ public class VoxelTerrainEditor : Editor
 
     private void SaveAllDataDirty(VoxelTerrain terrain)
     {
-        VoxelLoader.Save(terrain, "", true);
+        VoxelLoader.Save(terrain, true);
     }
 }

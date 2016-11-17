@@ -9,6 +9,7 @@ public class VoxelTerrain : MonoBehaviour
     public List<BlockType> BlockTypes = new List<BlockType>();
 
     public Dictionary<Vector3, Chunk> Chunks = new Dictionary<Vector3, Chunk>();
+    public string LevelName;
 
 	// Use this for initialization
 	void Start ()
@@ -38,15 +39,6 @@ public class VoxelTerrain : MonoBehaviour
         chunk.GetVoxel(localX, localY, localZ, ref result);
         return result;
     }
-	
-	// Update is called once per frame
-	void Update ()
-    {
-        if (!Application.isPlaying)
-        {
-            BlockTypes = GetComponentsInChildren<BlockType>().ToList<BlockType>();
-        }
-	}
 
     public void Clear()
     {
@@ -105,15 +97,17 @@ public class VoxelTerrain : MonoBehaviour
             chunk.Parent = this;
             chunk.transform.position = pos;
             chunk.Loaded = true;
-            var filename = string.Format("{0}.{1}.{2}.{3}.chunk", VoxelLoader.LevelPath("test"), pos.x, pos.y, pos.z);
-            if (File.Exists(filename))
+            var filename = string.Format("{0}.{1}.{2}.chunk",  pos.x, pos.y, pos.z);
+            var filepath = Path.Combine(VoxelLoader.LevelPath(LevelName), filename);
+
+            if (File.Exists(filepath))
             {
-                Debug.Log("Chunk not loaded, pulling from: " + filename);
-                ChunkSerializer.Deserialize(chunk, filename);
+                Debug.Log("Chunk not loaded, pulling from: " + filepath);
+                ChunkSerializer.Deserialize(chunk, filepath);
             }
             else
             {
-                Debug.Log("Skipping load chunk as file does not exist: " + filename);
+                Debug.Log("Skipping load chunk as file does not exist: " + filepath);
             }
         }
 

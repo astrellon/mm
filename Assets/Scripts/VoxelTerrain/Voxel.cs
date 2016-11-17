@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 
-public struct Voxel
+public struct Voxel : IEquatable<Voxel>
 {
     #region Statics {{{
     public enum MeshShapeType : byte
@@ -89,4 +90,9 @@ public struct Voxel
         return string.Format("Voxel {0} {1} {2}", MeshShape, Rotation, IsUpsideDown ? "upside down" : "upwards");
     }
     #endregion }}}
+
+    public bool Equals(Voxel other)
+    {
+        return this.ShapeData == other.ShapeData && this.BlockType == other.BlockType;
+    }
 }

@@ -7,8 +7,6 @@ using System.IO;
 [ExecuteInEditMode]
 public class VoxelLoader : MonoBehaviour {
 
-    public string FilePath;
-
 	// Use this for initialization
 	void Start ()
     {
@@ -24,7 +22,7 @@ public class VoxelLoader : MonoBehaviour {
     {
         var terrain = GetComponent<VoxelTerrain>();
         terrain.Clear();
-        Load(terrain, FilePath);
+        Load(terrain);
         terrain.RenderAll();
     }
 
@@ -33,11 +31,9 @@ public class VoxelLoader : MonoBehaviour {
         return Path.Combine(@"Assets/Levels", path);
     }
 
-    public static void Load(VoxelTerrain terrain, string path)
+    public static void Load(VoxelTerrain terrain)
     {
-        var filename = Path.GetFileNameWithoutExtension(path);
-
-        foreach (var file in Directory.GetFiles(LevelPath(Path.GetDirectoryName(path)), "test" + "*.chunk"))
+        foreach (var file in Directory.GetFiles(LevelPath(terrain.LevelName), "*.chunk"))
         {
             Debug.Log("Related files: " + file);
             Vector3 chunkPosition;
@@ -54,11 +50,13 @@ public class VoxelLoader : MonoBehaviour {
     public void Save(bool onlyDirty = false)
     {
         var terrain = GetComponent<VoxelTerrain>();
-        Save(terrain, FilePath, onlyDirty);
+        Save(terrain, onlyDirty);
     }
 
-    public static void Save(VoxelTerrain terrain, string path, bool onlyDirty)
+    public static void Save(VoxelTerrain terrain, bool onlyDirty)
     {
+        var baseFolder = LevelPath(terrain.LevelName);
+        Directory.CreateDirectory(baseFolder);
         foreach (var chunk in terrain.Chunks.Values)
         {
             if (onlyDirty && !chunk.IsDataDirty)
@@ -67,7 +65,7 @@ public class VoxelLoader : MonoBehaviour {
             }
 
             var pos = chunk.ChunkPosition;
-            var filename = string.Format("{0}.{1}.{2}.{3}.chunk", LevelPath("test"), pos.x, pos.y, pos.z);
+            var filename = Path.Combine(baseFolder, string.Format("{0}.{1}.{2}.chunk", pos.x, pos.y, pos.z));
             Debug.Log("Saving chunk: " + filename);
             ChunkSerializer.Serialize(chunk, filename);
             chunk.IsDataDirty = false;

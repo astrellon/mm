@@ -22,7 +22,6 @@ public class VoxelLoaderEditor : Editor {
 
         var loader = (VoxelLoader)target;
 
-        loader.FilePath = EditorGUILayout.TextField("FilePath", loader.FilePath);
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Load"))
         {
