@@ -57,6 +57,7 @@ public class VoxelTerrainEditor : Editor
     private bool paintShape = false;
     private bool paintBlockType = false;
     private bool paintOnlyBlank = false;
+    private bool leftAltDown = false;
 
     private PlaneAlignment alignment = PlaneAlignment.XZ;
 
@@ -190,12 +191,47 @@ public class VoxelTerrainEditor : Editor
         var e = Event.current;
         var controlId = GUIUtility.GetControlID(FocusType.Passive);
         var terrain = (VoxelTerrain)target;
+        
+
+        if (e.type == EventType.KeyUp)
+        {
+            if (e.keyCode == KeyCode.LeftAlt)
+            {
+                leftAltDown = false;
+            }
+        }
+
+        if (leftAltDown && (e.type == EventType.MouseDown || e.type == EventType.MouseUp))
+        {
+            e.Use();
+            return;
+        }
+
+        if (leftAltDown && e.type == EventType.MouseDrag)
+        {
+            var view = SceneView.currentDrawingSceneView;
+            var cam = view.camera;
+            //Debug.Log("Dragging!: " + cam.transform.position + ", " + view.pivot);
+            //cam.transform.RotateAround(view.pivot, Vector3.up, 1.00f);
+            //view.pivot += Vector3.left;
+            //view.rotation *= Quaternion.AngleAxis(1.0f, Vector3.up);
+            //SceneView.lastActiveSceneView.camera.
+            e.Use();
+            return;
+        }
 
         if (e.type == EventType.KeyDown)
         {
             var newAlignment = PlaneAlignment.None;
             var useEvent = false;
             var index = 0;
+
+            if (e.keyCode == KeyCode.LeftAlt)
+            {
+                leftAltDown = true;
+                return;
+            }
+
             foreach (var planeNormal in planeNormals)
             {
                 if (index >= Row1Keys.Count) return;
@@ -270,7 +306,7 @@ public class VoxelTerrainEditor : Editor
                 e.Use();
             }
         }
-
+        
         CreatePlanes(terrain);
 
         if ((e.type == EventType.MouseDown || e.type == EventType.MouseDrag) && e.button == 0)
@@ -301,7 +337,7 @@ public class VoxelTerrainEditor : Editor
                 e.Use();
             }
         }
-
+        
         if (e.type == EventType.MouseUp && e.button == 0)
         {
             if (mouseDownTileCursorPosition.HasValue && paintMode == PaintModeType.Rectangle)
